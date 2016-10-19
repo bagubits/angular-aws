@@ -26,6 +26,7 @@ yourApp.config(function($AWSProvider) {
 	$AWSProvider.cognitoLoginId = ''; //cognito login id
 	$AWSProvider.identityPoolId = ''; //go to AWS Cognito Federated Identites
 	$AWSProvider.userAttributes = ['email', 'phone_number' ]; //the standard attributes you require in AWS Cognito
+	$AWSProvider.SESSource = 'noreply@example.com'; //SES source email
 	$AWSProvider.MFARequired = false; //do you require your clients to use MFA?
 
 });

@@ -9,6 +9,7 @@ angularAWS.provider("$AWS", [function() {
     this.cognitoLoginId = null;
     this.userAttributes = null;
     this.region = null;
+    this.SESSource = null;
 
     this.setRegion = function(region){
         this.region = region;
@@ -24,6 +25,7 @@ angularAWS.provider("$AWS", [function() {
             "cognitoLoginId": this.cognitoLoginId,
             "userAttributes": this.userAttributes,
             "setRegion": this.setRegion,
+            "SESSource": this.SESSource,
         };
     }];
 
