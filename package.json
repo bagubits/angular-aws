@@ -1,0 +1,39 @@
+{
+    "name": "angular-aws",
+    "version": "1.0.0",
+    "description": "Angular AWS login and services integration",
+    "main": "index.js",
+    "scripts": {
+        "build": "grunt build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bagubits/angular-aws.git"
+    },
+    "keywords": [
+        "angular",
+        "AWS",
+        "login",
+        "cognito",
+        "dynamodb"
+    ],
+    "author": "Bagubits",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/bagubits/angular-aws/issues"
+    },
+    "homepage": "https://github.com/bagubits/angular-aws#readme",
+    "devDependencies": {
+        "grunt": "^1.0.1",
+        "grunt-contrib-concat": "^1.0.1",
+        "grunt-contrib-uglify": "^2.0.0"
+    },
+    "javascript": {
+        "jsDir": "./src",
+        "jsConcatFile": "./dist/angular-aws.js",
+        "jsLib": "./lib",
+        "jsLibConcatFile": "./dist/angular-aws-lib.js",
+        "jsMinFile": "./dist/angular-aws.min.js",
+        "sourceMap": true
+    }
+}
