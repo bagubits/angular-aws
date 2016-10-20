@@ -165,3 +165,28 @@ $scope.upload = function(e){
     }
 }
 ```
+
+SES
+
+```
+$scope.emailrecipe = "";
+$scope.sendEmail = function(){
+	var object = "test";
+	var msg = "test message";
+	SES.sendEmail($scope.emailrecipe, object, msg, function(status, data){
+		if(!status) console.error(data);
+	})
+}
+```
+
+Lambda
+
+```
+$scope.functionName = "";
+$scope.execFunction = function(){
+	Lambda.invoke($scope.functionName, function(status, data){
+		if(!status) console.error(data);
+		else console.log(data);
+	}, {test: "testone", test2: "testtwo"})
+}
+```
