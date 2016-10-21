@@ -1,0 +1,24 @@
+{
+  "name": "angular-aws",
+  "description": "Angular AWS login and services integration",
+  "main": "index.js",
+  "authors": [
+    "Bagubits"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "AWS",
+    "login",
+    "cognito",
+    "dynamodb"
+  ],
+  "homepage": "https://github.com/bagubits/angular-aws",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

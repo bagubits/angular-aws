@@ -1,6 +1,6 @@
 {
     "name": "angular-aws",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Angular AWS login and services integration",
     "main": "index.js",
     "scripts": {
