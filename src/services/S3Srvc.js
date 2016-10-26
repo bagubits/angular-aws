@@ -10,7 +10,8 @@ angularAWS.service('S3', function() {
         var params = {
             Key: key,
             ContentType: file.type,
-            Body: file
+            Body: file,
+            ACL: 'public-read'
         };
         bucket.upload(params, function(err, data) {
             if (err) cb(false);

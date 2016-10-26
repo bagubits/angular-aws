@@ -45,9 +45,7 @@ angularAWS.service('DynamoDB', function() {
     }
 
     this.scan = function(params, cb) {
-        if (!this.db) this.db = new AWS.DynamoDB();
-
-        var docClient = this.db.DocumentClient();
+        var docClient = new AWS.DynamoDB.DocumentClient();
 
         docClient.scan(params, cb);
     }

@@ -55,12 +55,12 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
     this.register = function(userName, userPassword, attributeList, cb) {
         angular.forEach(attributeList, function(value, key) {
             var userAttribute = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserAttribute(value);
-            this.cognitoAttributeList.push(userAttribute);
+            self.cognitoAttributeList.push(userAttribute);
         });
         this.cognitoUserdata.name = userName;
         this.cognitoUserdata.pass = userPassword;
         this.cognitoUserdata.attributelist = this.cognitoAttributeList;
-        this.userPool.signUp(userName, userPassword, cognitoAttributeList, null, function(err, result) {
+        this.userPool.signUp(userName, userPassword, this.cognitoAttributeList, null, function(err, result) {
             if (!err) {
                 this.cognitoUser = result.user;
                 return cb(true, this.cognitoUser);
@@ -102,12 +102,8 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
                 var Logins = {};
                 Logins[$AWS.cognitoLoginId] = result.getIdToken().getJwtToken();
                 AWS.config.region = AWSCognito.config.region;
-                self.credentials = new AWS.CognitoIdentityCredentials({
-                    IdentityPoolId: $AWS.identityPoolId,
-                    region: AWSCognito.config.region,
-                    Logins: Logins
-                });
-                AWS.config.credentials = self.credentials;
+                self.credentials = Logins;
+                self.setCredentials(Logins);
                 cb(true, result);
             },
             mfaRequired: function(session) {
@@ -119,13 +115,30 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
         });
     };
 
+    this.unauthenticatedCredentials = function(cb){
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: $AWS.identityPoolId,
+        });
+        AWS.config.credentials.get(function(){
+            cb({
+                accessKeyId: AWS.config.credentials.accessKeyId,
+                secretAccessKey: AWS.config.credentials.secretAccessKey,
+                sessionToken: AWS.config.credentials.sessionToken,
+            });
+        });
+    }
+
     this.getCredentials = function(){
         return this.credentials;
     }
 
     this.setCredentials = function(credentials){
         this.credentials = credentials;
-        AWS.config.credentials = credentials;
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: $AWS.identityPoolId,
+            region: AWSCognito.config.region,
+            Logins: credentials
+        });
     }
 
     this.signOut = function() {
@@ -133,10 +146,10 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
         else return null;
     }
 
-    this.getSession = function(a, cb) {
+    this.getSession = function(cb) {
         var cognitoUser = this.userPool.getCurrentUser();
         if (cognitoUser != null) {
-            this.cognitoUser.getSession(function(err, result) {
+            cognitoUser.getSession(function(err, result) {
                 if (result) {
 
                     var Logins = {};
@@ -159,17 +172,35 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
                             if(cb) cb(AWS.config.credentials);
                         }
                     });
+                }else{
+                    console.error(err);
                 }
             });
+        }else{
+            cb(null);
         }
     }
 
 
+    this.getCurrentUser = function(cb) {
+        var cognitoUser = this.userPool.getCurrentUser();
+        cb(cognitoUser);
+    }
+
+
     this.getUserAttributes = function(cb) {
-        this.cognitoUser.getUserAttributes(function(err, result) {
-            if (err) cb(false, err);
-            else cb(true, result);
-        });
+        var cognitoUser = this.userPool.getCurrentUser();
+
+        if (cognitoUser != null) {
+            if (!this.cognitoUser) this.cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+                Username: cognitoUser.username,
+                Pool: this.userPool
+            });
+            this.cognitoUser.getUserAttributes(function(err, result) {
+                if (err) cb(false, err);
+                else cb(true, result);
+            });
+        }
     }
 
 }]);
@@ -221,9 +252,7 @@ angularAWS.service('DynamoDB', function() {
     }
 
     this.scan = function(params, cb) {
-        if (!this.db) this.db = new AWS.DynamoDB();
-
-        var docClient = this.db.DocumentClient();
+        var docClient = new AWS.DynamoDB.DocumentClient();
 
         docClient.scan(params, cb);
     }
@@ -261,7 +290,8 @@ angularAWS.service('S3', function() {
         var params = {
             Key: key,
             ContentType: file.type,
-            Body: file
+            Body: file,
+            ACL: 'public-read'
         };
         bucket.upload(params, function(err, data) {
             if (err) cb(false);
