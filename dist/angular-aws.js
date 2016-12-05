@@ -115,6 +115,35 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
         });
     };
 
+    this.socialAuthenticate = function(provider, token, cb){
+
+        var provider_selected = false;
+        var credentials = {};
+        switch (provider) {
+            case "google":
+                credentials["accounts.google.com"] = token;
+                provider_selected = true;
+                break;
+            case "facebook":
+                credentials["graph.facebook.com"] = token;
+                provider_selected = true;
+                break;
+        }
+
+        if(provider_selected){
+            self.credentials = credentials;
+            self.setCredentials(credentials);
+            AWS.config.credentials.get(function(err){
+                if(err)
+                    cb(false, err);
+                else
+                    cb(true);
+            });
+        }else{
+            cb(false);
+        }
+    }
+
     this.unauthenticatedCredentials = function(cb){
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: $AWS.identityPoolId,
@@ -147,7 +176,7 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
     }
 
     this.getSession = function(cb) {
-        var cognitoUser = this.userPool.getCurrentUser();
+        var cognitoUser = self.userPool.getCurrentUser();
         if (cognitoUser != null) {
             cognitoUser.getSession(function(err, result) {
                 if (result) {
