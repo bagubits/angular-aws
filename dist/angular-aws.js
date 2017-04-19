@@ -85,7 +85,7 @@ angularAWS.service('Cognito', ['$AWS', function($AWS) {
     }
 
     this.authenticate = function(userName, userPassword, cb) {
-        if (!this.cognitoUser) this.cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+        this.cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
             Username: userName,
             Pool: this.userPool
         });
